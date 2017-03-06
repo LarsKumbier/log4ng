@@ -1,0 +1,13 @@
+<h1>
+  {{title}}
+</h1>
+
+<ul>
+  <li><a href="#" (click)="throwAnError()">trigger Angular2 error</a></li>
+  <li><a href="#" onclick="console.log('console::log called')">trigger console.log()</a></li>
+  <li><a href="#" (click)="logging.log('A LOG message')">trigger logging.log()</a></li>
+  <li><a href="#" (click)="logging.debug('A DEBUG message')">trigger logging.debug()</a></li>
+  <li><a href="#" (click)="logging.info('AN INFO message')">trigger logging.info()</a></li>
+  <li><a href="#" (click)="logging.warn('A WARN message')">trigger logging.warn()</a></li>
+  <li><a href="#" (click)="logging.error('AN ERROR message')">trigger logging.error()</a></li>
+</ul>
