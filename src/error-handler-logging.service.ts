@@ -4,12 +4,7 @@
 
 import { ErrorHandler, Inject, Injectable } from '@angular/core';
 import { Log4ngService } from '.';
-
-
-export interface ILoggingErrorHandlerConfig {
-  rethrowError: boolean;
-  unwrapError: boolean;
-}
+import { ILoggingErrorHandlerConfig } from './i-logging-error-handler-config';
 
 export const LOG4NG_ERROR_HANDLER_CONFIG: ILoggingErrorHandlerConfig = {
   rethrowError: false,
