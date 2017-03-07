@@ -16,9 +16,9 @@
 
 import { NgModule, ModuleWithProviders } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ILog4ngServiceConfig } from './src/i-logging-service-config';
 import {
   Log4ngService,
+  ILog4ngServiceConfig,
   LOG4NG_SERVICE_CONFIG,
   LOG4NG_SERVICE_HANDLER_PROVIDERS,
   ErrorHandlerLoggingService,
@@ -32,13 +32,8 @@ export * from './src';
   imports: [
     CommonModule
   ],
-  declarations: [
-    Log4ngService,
-    ErrorHandlerLoggingService
-  ],
-  exports: [
-    Log4ngService,
-    ErrorHandlerLoggingService
+  providers: [
+    Log4ngService
   ]
 })
 export class Log4ngModule {
