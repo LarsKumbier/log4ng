@@ -26,6 +26,8 @@ import {
   LOG4NG_ERROR_HANDLER_PROVIDERS
 } from './src';
 
+export * from './src';
+
 @NgModule({
   imports: [
     CommonModule
@@ -39,17 +41,17 @@ import {
     ErrorHandlerLoggingService
   ]
 })
-export class Log4ng {
+export class Log4ngModule {
     static forRoot(config: ILog4ngServiceConfig = LOG4NG_SERVICE_CONFIG): ModuleWithProviders {
         return {
-            ngModule: Log4ng,
+            ngModule: Log4ngModule,
             providers: LOG4NG_SERVICE_HANDLER_PROVIDERS
         };
     }
 
     static forChild(config: ILog4ngServiceConfig = LOG4NG_SERVICE_CONFIG): ModuleWithProviders {
         return {
-            ngModule: Log4ng,
+            ngModule: Log4ngModule,
             providers: LOG4NG_SERVICE_HANDLER_PROVIDERS
         };
     }

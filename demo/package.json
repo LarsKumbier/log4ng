@@ -13,8 +13,8 @@
     "@angular/platform-browser": "^2.4.5",
     "@angular/platform-browser-dynamic": "^2.4.5",
     "@angular/router": "^3.4.5",
-    "@ngx-log4ng/core": "",
     "core-js": "2.4.1",
+    "@ngx-log4ng/core": "^1.0.0",
     "rxjs": "5.0.3",
     "zone.js": "0.7.6"
   },

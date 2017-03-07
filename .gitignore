@@ -14,9 +14,10 @@ npm-debug.log
 *.map
 *.d.ts
 !examples/**/*.js
-coverage
+/coverage
 *.metadata.json
-bundles
+/bundles
+/demo/dist/
 
 #################
 ## JetBrains
