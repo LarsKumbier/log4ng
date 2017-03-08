@@ -51,37 +51,24 @@ export class ConsoleRecipient implements Recipient {
   }
 
 
-  public logError(error: Error): this {
-    const msg = new Message(error.message + '' + error.stack, Level.Error);
-    if (this.filters.passesFilters(msg)) {
-      this.pushToConsole(Level.Error, error.message, error.stack);
-    }
-    return this;
-  }
-
-
   public log(message: Message): this {
-    if (this.filters.passesFilters(message)) {
-      this.pushToConsole(message.level, ...message.messages);
+    if (!this.filters.passesFilters(message)) {
+      return this;
     }
-    return this;
-  }
 
-
-  protected pushToConsole(level: Level, ...args: string[]): void {
-    level = (level === Level.Undecided) ? Level.Log : level;
+    const level = (message.level === Level.Undecided) ? Level.Log : message.level;
 
     if (!!this.name && !!this.consoleFn.group) {
       this.consoleFn.group( this.name );
     }
 
-    for (const arg of args) {
-      const fn = Level[level].toLowerCase();
-      this.consoleFn[fn](arg);
-    }
+    const fn = Level[level].toLowerCase();
+    this.consoleFn[fn](message.message);
 
     if (!!this.name && !!this.consoleFn.group) {
       this.consoleFn.groupEnd();
     }
+
+    return this;
   }
 }

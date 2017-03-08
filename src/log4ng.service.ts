@@ -1,54 +1,29 @@
-import { Injectable, Inject } from '@angular/core';
+import { ErrorHandler, Injectable, Optional } from '@angular/core';
+
+import { Log4ngServiceConfig } from './log4ng.service.config';
 import * as recipients from './recipients';
-import { LogFilters, ILogFilter } from './filters';
-import { ILog4ngServiceConfig } from './i-logging-service-config';
-import { Message, Level } from './message';
-
-
-/**
- * FIXME: NOT doing anything should be made explicit by screaming loudly
- * The same behaviour can be reached by DummyWriter and PassFilter
- */
-export const LOG4NG_SERVICE_CONFIG: ILog4ngServiceConfig = {
-  recipients: [],
-  filters: []
-};
+import { ErrorMessage, Level, Message } from './message';
+import { LogFilters, LogFilter, LogFilterConfig } from './filters';
 
 
 @Injectable()
-export class Log4ngService {
+export class Log4ngService implements ErrorHandler {
+  protected config: Log4ngServiceConfig;
   protected recipients: Array<recipients.Recipient> = [];
   protected filters: LogFilters;
 
 
-  constructor(@Inject(LOG4NG_SERVICE_CONFIG) config: ILog4ngServiceConfig) {
+  constructor(@Optional() config?: Log4ngServiceConfig) {
     this.filters = new LogFilters();
-    if (!!config) {
+    if (config) {
+      this.config = config;
       this.addRecipientsFromConfig(config.recipients);
       this.filters.addFiltersByConfig(config.filters);
     }
   }
 
 
-  public addFiltersByConfig(config: any): this {
-    this.filters.addFiltersByConfig(config);
-    return this;
-  }
-
-
-  public addFilterByConfig(config: any): this {
-    this.filters.addFilterByConfig(config);
-    return this;
-  }
-
-
-  public addFilter(filter: ILogFilter): this {
-    this.filters.addFilter(filter);
-    return this;
-  }
-
-
-  public addRecipientsFromConfig(config: recipients.RecipientConfig[]): this {
+  public addRecipientsFromConfig(config?: recipients.RecipientConfig[]): this {
     if (!!!config) {
       return this;
     }
@@ -75,29 +50,41 @@ export class Log4ngService {
   }
 
 
-  /**
-   * FIXME: MyError should be a special case of a Message, so that this
-   * method is just a proxy-method for log()
-   */
-  public logError(error: any): this {
-    const msg = new Message(error.message + error.stack, Level.Error);
-    if (!this.filters.passesFilters(msg)) {
-      return this;
-    }
-
-    for (const writer of this.recipients) {
-      writer.logError(error);
-    }
-
+  public addFiltersByConfig(config): this {
+    this.filters.addFiltersByConfig(config);
     return this;
   }
 
 
+  public addFilterByConfig(config): this {
+    this.filters.addFilterByConfig(config);
+    return this;
+  }
+
+
+  public addFilter(filter: LogFilter): this {
+    this.filters.addFilter(filter);
+    return this;
+  }
+
+
+  public handleError(error: Error): void {
+    error = this.config.unwrapError ? this.findOriginalError(error) : error;
+
+    this.sendToRecipients(new ErrorMessage(error));
+
+    if (this.config.rethrowError) {
+      throw error;
+    }
+  }
+
+
   public log(thing: any, level?: Level): this {
-    if (typeof thing !== 'string' && !(thing instanceof Array)) {
+    if (typeof thing !== 'string') {
       thing = thing.toString();
     }
     const message = new Message(thing, level);
+
     this.sendToRecipients(message);
 
     return this;
@@ -113,13 +100,12 @@ export class Log4ngService {
       recipient.log(message);
     }
   }
+
+
+  protected findOriginalError( error: any ): any {
+    while ( error && error.ngOriginalError ) {
+      error = error.ngOriginalError;
+    }
+    return( error );
+  }
 }
-
-
-export const LOG4NG_SERVICE_HANDLER_PROVIDERS = [
-  {
-    provide: LOG4NG_SERVICE_CONFIG,
-    useValue: LOG4NG_SERVICE_CONFIG
-  },
-  Log4ngService
-];

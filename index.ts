@@ -14,40 +14,44 @@
     limitations under the License.
  */
 
-import { NgModule, ModuleWithProviders } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import {
-  Log4ngService,
-  ILog4ngServiceConfig,
-  LOG4NG_SERVICE_CONFIG,
-  LOG4NG_SERVICE_HANDLER_PROVIDERS,
-  ErrorHandlerLoggingService,
-  LOG4NG_ERROR_HANDLER_CONFIG,
-  LOG4NG_ERROR_HANDLER_PROVIDERS
-} from './src';
+ import { NgModule, ModuleWithProviders, ErrorHandler } from '@angular/core';
+ import { CommonModule } from '@angular/common';
 
-export * from './src';
+ import { Log4ngService } from './src/log4ng.service';
+ import { Log4ngServiceConfig } from './src/log4ng.service.config';
 
-@NgModule({
-  imports: [
-    CommonModule
-  ],
-  providers: [
-    Log4ngService
-  ]
-})
-export class Log4ngModule {
-    static forRoot(config: ILog4ngServiceConfig = LOG4NG_SERVICE_CONFIG): ModuleWithProviders {
-        return {
-            ngModule: Log4ngModule,
-            providers: LOG4NG_SERVICE_HANDLER_PROVIDERS
-        };
-    }
+ export { Log4ngService } from './src/log4ng.service';
+ export { Message, Level } from './src/message';
 
-    static forChild(config: ILog4ngServiceConfig = LOG4NG_SERVICE_CONFIG): ModuleWithProviders {
-        return {
-            ngModule: Log4ngModule,
-            providers: LOG4NG_SERVICE_HANDLER_PROVIDERS
-        };
-    }
-}
+ @NgModule({
+   imports: [ CommonModule ],
+   providers: [
+     Log4ngService
+   ]
+ })
+ export class Log4ngModule {
+   static forRoot(config?: Log4ngServiceConfig): ModuleWithProviders {
+     return {
+       ngModule: Log4ngModule,
+       providers: [
+         {
+           provide: Log4ngServiceConfig,
+           useValue: config
+         }
+       ]
+     };
+   }
+
+
+   static forChild(config?: Log4ngServiceConfig): ModuleWithProviders {
+     return {
+       ngModule: Log4ngModule,
+       providers: [
+         {
+           provide: Log4ngServiceConfig,
+           useValue: config
+         }
+       ]
+     };
+   }
+ }

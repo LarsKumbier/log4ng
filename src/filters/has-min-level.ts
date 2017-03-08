@@ -1,11 +1,11 @@
 import { Message, Level } from '../message';
-import { ILogFilter } from './i-log-filter';
+import { LogFilter } from './log-filter';
 
 export interface HasMinLevelConfig {
   minLevel: Level;
 }
 
-export class HasMinLevel implements ILogFilter {
+export class HasMinLevel implements LogFilter {
   protected _minLevel: Level;
 
   constructor(config: HasMinLevelConfig) {

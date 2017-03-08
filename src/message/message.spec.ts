@@ -23,11 +23,4 @@ describe('Message', () => {
     }
     expect(passed).toBe(true);
   });
-
-  it('should be possible to create a message with multiple messages inside', () => {
-    const msg1 = 'part A';
-    const msg2 = 'part B';
-    const sut = new Message([msg1, msg2]);
-    expect(sut.messages).toEqual([msg1, msg2]);
-  });
 });

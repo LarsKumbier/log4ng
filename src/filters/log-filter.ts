@@ -1,5 +1,5 @@
 import { Message } from '../message';
 
-export interface ILogFilter {
+export interface LogFilter {
   shouldBeLogged(message: Message): boolean;
 }

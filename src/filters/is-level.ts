@@ -1,11 +1,11 @@
 import { Message, Level } from '../message';
-import { ILogFilter } from './i-log-filter';
+import { LogFilter } from './log-filter';
 
 export interface IsLevelConfig {
   levels: Level[];
 }
 
-export class IsLevel implements ILogFilter {
+export class IsLevel implements LogFilter {
   protected levels: Level[];
 
   constructor(config: IsLevelConfig) {

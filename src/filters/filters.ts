@@ -2,9 +2,9 @@ import * as filters from '.';
 import { Message } from '../message';
 
 export class LogFilters {
-  protected filters: Array<filters.ILogFilter> = [];
+  protected filters: Array<filters.LogFilter> = [];
 
-  public addFiltersByConfig(config: any): this {
+  public addFiltersByConfig(config): this {
     if (!!!config) {
       return this;
     }
@@ -21,7 +21,7 @@ export class LogFilters {
   }
 
 
-  public addFilterByConfig(config: any): this {
+  public addFilterByConfig(config): this {
     const filter = config.params
       ? new filters[config.classname](config.params)
       : new filters[config.classname]();
@@ -30,7 +30,7 @@ export class LogFilters {
   }
 
 
-  public addFilter(filter: filters.ILogFilter): this {
+  public addFilter(filter: filters.LogFilter): this {
     this.filters.push(filter);
     return this;
   }

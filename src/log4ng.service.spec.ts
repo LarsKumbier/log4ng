@@ -1,21 +1,17 @@
 import {} from 'jasmine';
-import { TestBed, inject } from '@angular/core/testing';
 import { ReflectiveInjector } from '@angular/core';
-import {
-  Pass,
-  DummyRecipient,
-  RecipientConfig,
-  Level,
-  LOG4NG_SERVICE_HANDLER_PROVIDERS,
-  LOG4NG_SERVICE_CONFIG,
-  Log4ngService,
-  Message
-} from '.';
+import { TestBed, async, inject } from '@angular/core/testing';
+import { Log4ngService } from './log4ng.service';
+import { Log4ngServiceConfig } from './log4ng.service.config';
+import { DummyRecipient, RecipientConfig } from './recipients';
+import { Level, Message } from './message';
+import { Pass, Block } from './filters';
 
 
-export class Log4ngTestClass extends Log4ngService {
+
+class Log4ngServiceTest extends Log4ngService {
   public sendToRecipients(message: Message): void {
-
+    return super.sendToRecipients(message);
   }
 }
 
@@ -24,38 +20,29 @@ describe('Log4ngService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        LOG4NG_SERVICE_HANDLER_PROVIDERS
+        {
+          provide: Log4ngServiceConfig,
+          useValue: {}
+        },
+        Log4ngService,
+        Log4ngServiceTest
       ]
     });
   });
 
 
-  /**
-   * FIXME: this looks promising
-  it('should have a nice readable interface', inject([Log4ngService], (logger: Log4ngService) => {
-    logger.logsTo(console).and
-          .logsTo(graylog)
-          .if(isMinLevel(Level.Debug)).and
-          .if(isMaxLevel(Level.Warn));
-  }));
-  */
-
-
-  /**
-   * FIXME: refactor into two one-dimensional tests
-   */
-  it('should call registered writers\' logMessage function each time logger logs a message',
-        inject([Log4ngService], (logger: Log4ngService) => {
+  it('should call registered writers\' log method multiple times for multiple log messages',
+        inject([Log4ngService],
+        (logger: Log4ngService) => {
     const anyWriter = new DummyRecipient();
     spyOn(anyWriter, 'log');
     logger.addRecipient(anyWriter);
+    expect(anyWriter.log).not.toHaveBeenCalled();
 
-    logger.log('1st Message', Level.Info);
-
+    logger.log('1st Message');
     expect(anyWriter.log).toHaveBeenCalledTimes(1);
 
-    logger.log('2nd Message', Level.Error);
-
+    logger.log('2nd Message');
     expect(anyWriter.log).toHaveBeenCalledTimes(2);
   }));
 
@@ -69,31 +56,72 @@ describe('Log4ngService', () => {
     logger.addRecipient(anyWriter1)
           .addRecipient(anyWriter2);
 
-    logger.log('a Message', Level.Info);
+    expect(anyWriter1.log).not.toHaveBeenCalled();
+    expect(anyWriter2.log).not.toHaveBeenCalled();
+
+    logger.log('a Message');
 
     expect(anyWriter1.log).toHaveBeenCalledTimes(1);
     expect(anyWriter2.log).toHaveBeenCalledTimes(1);
   }));
 
 
+  it('should instantiate recipients from config', inject([Log4ngService], (logger: Log4ngService) => {
+    const dummyConfig: RecipientConfig[] = [
+      {
+        classname: 'DummyRecipient',
+        params: {
+          name: 'anyRecipient1'
+        }
+      },
+      {
+        classname: 'DummyRecipient',
+        params: {
+          name: 'anyRecipient2'
+        }
+      }
+    ];
+    spyOn(logger, 'addRecipient').and.callThrough();
 
-  it('should work without registered writers', inject([Log4ngService], (logger: Log4ngService) => {
-    logger.log('A Message');
+    logger.addRecipientsFromConfig(dummyConfig);
+
+    expect(logger.addRecipient).toHaveBeenCalledWith(jasmine.any(DummyRecipient));
+    expect(logger.addRecipient).toHaveBeenCalledTimes(2);
   }));
 
 
-  it('should log without registered filters', inject([Log4ngService], (logger: Log4ngService) => {
-    const writer = new DummyRecipient();
-    spyOn(writer, 'log');
-    logger.addRecipient(writer);
+  it('should handle non-string objects', inject([Log4ngService], (logger: Log4ngServiceTest) => {
+    const thing = {
+      'aString': 'value',
+      'aNumber': 42,
+      aFunction: () => {
+        return true;
+      }
+    };
+    spyOn(logger, 'sendToRecipients').and.callThrough();
 
-    logger.log('Some Message', Level.Warn);
+    logger.log(thing);
 
-    expect(writer.log).toHaveBeenCalledTimes(1);
+    expect((logger as any).sendToRecipients).toHaveBeenCalledWith(jasmine.any(Message));
   }));
 
 
-  it('should run through the filter chain when logging', inject([Log4ngService], (logger: Log4ngService) => {
+  it('should instantiate from config without writers and filters', () => {
+    const injector = ReflectiveInjector.resolveAndCreate([
+      {
+        provide: Log4ngServiceConfig,
+        useValue: {}
+      },
+      Log4ngService
+    ]);
+
+    const service = injector.get(Log4ngService);
+
+    expect(service instanceof Log4ngService).toBe(true);
+  });
+
+
+  it('should run through the filter chain when logging', inject([Log4ngServiceTest], (logger: Log4ngServiceTest) => {
     const filter1 = new Pass();
     spyOn(filter1, 'shouldBeLogged').and.returnValue(true);
     const filter2 = new Pass();
@@ -132,71 +160,4 @@ describe('Log4ngService', () => {
 
     expect(writer.log).not.toHaveBeenCalled();
   }));
-
-
-  it('should instantiate writers from config', inject([Log4ngService], (logger: Log4ngService) => {
-    const dummyConfig: RecipientConfig[] = [
-      {
-        classname: 'DummyRecipient',
-        params: {
-          name: 'anyRecipient1'
-        }
-      },
-      {
-        classname: 'DummyRecipient',
-        params: {
-          name: 'anyRecipient2'
-        }
-      }
-    ];
-    spyOn(logger, 'addRecipient').and.callThrough();
-
-    logger.addRecipientsFromConfig(dummyConfig);
-
-    expect(logger.addRecipient).toHaveBeenCalledWith(jasmine.any(DummyRecipient));
-    expect(logger.addRecipient).toHaveBeenCalledTimes(2);
-  }));
-
-
-  it('should handle non-string objects', () => {
-    const thing = {
-      'aString': 'value',
-      'aNumber': 42,
-      aFunction: () => {
-        return true;
-      }
-    };
-    const injector = ReflectiveInjector.resolveAndCreate([
-      {
-        provide: LOG4NG_SERVICE_CONFIG,
-        useValue: LOG4NG_SERVICE_CONFIG
-      },
-      {
-        provide: Log4ngService,
-        useClass: Log4ngTestClass
-      }
-    ]);
-
-    const logger = injector.get(Log4ngService);
-    spyOn(logger, 'sendToRecipients').and.callThrough();
-
-    logger.log(thing);
-
-    expect((logger as any).sendToRecipients).toHaveBeenCalledWith(jasmine.any(Message));
-  });
-
-
-  it('should instantiate from config without writers and filters', () => {
-    const injector = ReflectiveInjector.resolveAndCreate([
-      LOG4NG_SERVICE_HANDLER_PROVIDERS,
-      {
-        provide: LOG4NG_SERVICE_CONFIG,
-        useValue: {}
-      }
-    ]);
-
-    const service = injector.get(Log4ngService);
-
-    expect(service instanceof Log4ngService).toBe(true);
-  });
 });

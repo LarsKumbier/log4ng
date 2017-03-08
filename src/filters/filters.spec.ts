@@ -1,9 +1,9 @@
 import {} from 'jasmine';
-import { LogFilters, ILogFilterConfig, Pass } from '.';
+import { LogFilters, LogFilterConfig, Pass } from '.';
 
 describe('LogFilters', () => {
   it('should instantiate filters from config', () => {
-    const dummyConfig: ILogFilterConfig[] = [
+    const dummyConfig: LogFilterConfig[] = [
       {
         classname: 'Pass'
       },

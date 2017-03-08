@@ -25,7 +25,7 @@ const RESPONSE_404 = new Response(new ResponseOptions({
 
 const RESPONSE_NO_CONNECTION = new Response(new ResponseOptions({
   status: 0,
-  statusText: '',
+  statusText: "",
   type: ResponseType.Error
 }));
 
@@ -47,7 +47,7 @@ describe('Graylog', () => {
   });
 
 
-  it('meta-test on how to use a mockBackend for http', inject([Http, MockBackend], (fakeHttp: Http, mockBackend: MockBackend) => {
+  it('meta-test on how to use a mockBackend for http', inject([Http, MockBackend], (fakeHttp:Http, mockBackend:MockBackend) => {
     mockBackend.connections.subscribe((connection) => {
       expect(connection.request.method).toBe(RequestMethod.Post);
       connection.mockRespond(RESPONSE_OK);
@@ -66,7 +66,7 @@ describe('Graylog', () => {
   }));
 
 
-  it('should use our http-with-mockBackend', inject([Http, MockBackend], (fakeHttp: Http, mockBackend: MockBackend) => {
+  it('should use our http-with-mockBackend', inject([Http, MockBackend], (fakeHttp:Http, mockBackend:MockBackend) => {
     const msg = 'I am a Message';
 
     mockBackend.connections.subscribe((connection) => {
@@ -87,7 +87,7 @@ describe('Graylog', () => {
   }));
 
 
-  it('should fail when response is a 404', inject([Http, MockBackend], (fakeHttp: Http, mockBackend: MockBackend) => {
+  it('should fail when response is a 404', inject([Http, MockBackend], (fakeHttp:Http, mockBackend:MockBackend) => {
     mockBackend.connections.subscribe((connection) => {
       connection.mockRespond(RESPONSE_404);
     });
@@ -98,14 +98,14 @@ describe('Graylog', () => {
       failSilently: true
     };
 
-    const graylog = new GraylogTestclass(config);
+    const graylog = new GraylogTest(config);
     spyOn(graylog, 'handleError').and.callThrough();
     graylog.log(new Message('anything'));
     expect((graylog as any).handleError).toHaveBeenCalled();
   }));
 
 
-  it('should fail when no connection is possible', inject([Http, MockBackend], (fakeHttp: Http, mockBackend: MockBackend) => {
+  it('should fail when no connection is possible', inject([Http, MockBackend], (fakeHttp:Http, mockBackend:MockBackend) => {
     mockBackend.connections.subscribe((connection) => {
       connection.mockRespond(RESPONSE_NO_CONNECTION);
     });
@@ -116,7 +116,7 @@ describe('Graylog', () => {
       failSilently: true
     };
 
-    const graylog = new GraylogTestclass(config);
+    const graylog = new GraylogTest(config);
     spyOn(graylog, 'handleError').and.callThrough();
     graylog.log(new Message('anything'));
     expect((graylog as any).handleError).toHaveBeenCalled();
@@ -124,6 +124,8 @@ describe('Graylog', () => {
 });
 
 
-class GraylogTestclass extends Graylog {
-  public handleError(error: any): void { }
+class GraylogTest extends Graylog {
+  public handleError(error: any): void {
+    return super.handleError(error);
+  }
 }

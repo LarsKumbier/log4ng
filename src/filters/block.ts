@@ -1,8 +1,8 @@
-import { ILogFilter } from '.';
+import { LogFilter } from './log-filter';
 import { Message } from '../message';
 
-export class Block implements ILogFilter {
-  constructor(public config?: any) {}
+export class Block implements LogFilter {
+  constructor(public config?) {}
 
   shouldBeLogged(message: Message): boolean {
     return false;

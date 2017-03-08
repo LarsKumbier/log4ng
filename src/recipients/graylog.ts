@@ -1,5 +1,5 @@
 import { Recipient } from './recipient';
-import { ReflectiveInjector } from '@angular/core';
+import { ReflectiveInjector, Inject } from '@angular/core';
 import { GelfMessage } from './graylog/gelf-message';
 import { RecipientConfigParams } from './recipient-config';
 import { Message } from '../message';
@@ -96,9 +96,8 @@ export class Graylog implements Recipient {
 
 
   public log(message: Message): this {
-    for (const entry of message.messages) {
-      this.send(new GelfMessage(entry, null, message.level));
-    }
+    this.send(new GelfMessage(message.message, null, message.level));
+
     return this;
   }
 

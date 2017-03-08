@@ -1,18 +1,11 @@
 import { Level } from './level';
 
 export class Message {
-  // FIXME: no array, bad idea, wtf were you thinking.
-  protected _messages: string[] = [];
+  protected _message: string;
   protected _level: Level = Level.Undecided;
 
-  constructor(messages: string|string[], level?: Level) {
-    if (messages instanceof Array) {
-      for (const message of messages) {
-        this.addMessage(message);
-      }
-    } else {
-      this.addMessage(messages);
-    }
+  constructor(message: string, level?: Level) {
+    this.addMessage(message);
 
     if (!!level) {
       if (typeof Level[level] === 'undefined') {
@@ -22,19 +15,12 @@ export class Message {
     }
   }
 
-  protected addMessage(message: any): void {
-    if (typeof message !== 'string') {
-      message = message.toString();
-    }
-    this._messages.push(message);
-  }
-
-  get messages(): string[] {
-    return this._messages;
+  protected addMessage(message: string): void {
+    this._message = message;
   }
 
   get message(): string {
-    return this._messages.toString();
+    return this._message;
   }
 
   get level(): Level {

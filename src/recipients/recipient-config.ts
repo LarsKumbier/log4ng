@@ -1,4 +1,4 @@
-import { ILogFilterConfig } from '../filters';
+import { LogFilterConfig } from '../filters';
 
 export interface RecipientConfig {
   classname: string;
@@ -7,6 +7,6 @@ export interface RecipientConfig {
 
 export interface RecipientConfigParams {
   name?: string;
-  filters?: ILogFilterConfig[];
+  filters?: LogFilterConfig[];
   consoleFn?: Console;
 }
