@@ -2,12 +2,26 @@
   {{title}}
 </h1>
 
+<p>
+  This is a demo for Log4ng. Open up the console, after initialisation it will
+</p>
+
 <ul>
-  <li><a href="#" (click)="throwAnError()">trigger Angular2 error</a></li>
-  <li><a href="#" onclick="console.log('console::log called')">trigger console.log()</a></li>
-  <li><a href="#" (click)="logging.log('A LOG message')">trigger logging.log()</a></li>
-  <li><a href="#" (click)="logging.debug('A DEBUG message')">trigger logging.debug()</a></li>
-  <li><a href="#" (click)="logging.info('AN INFO message')">trigger logging.info()</a></li>
-  <li><a href="#" (click)="logging.warn('A WARN message')">trigger logging.warn()</a></li>
-  <li><a href="#" (click)="logging.error('AN ERROR message')">trigger logging.error()</a></li>
+  <li>Log a message of type LOG</li>
+  <li>Log a message of type DEBUG</li>
+  <li>Log a message of type INFO</li>
+  <li>Log a message of type WARN</li>
+  <li>Log a message of type ERROR</li>
+  <li>Throw an error</li>
 </ul>
+
+<hr>
+
+<h2>Manual Actions</h2>
+
+<button type="button" name="button" (click)="log('Manual LOG message')">Log Message</button>
+<button type="button" name="button" (click)="debug('Manual DEBUG message')">Debug Message</button>
+<button type="button" name="button" (click)="info('Manual INFO message')">Info Message</button>
+<button type="button" name="button" (click)="warn('Manual WARN message')">Warn Message</button>
+<button type="button" name="button" (click)="error('Manual ERROR message')">Error Message</button>
+<button type="button" name="button" (click)="fail('Manual thrown error')">Throw error</button>

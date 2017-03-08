@@ -1,46 +1,32 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
-import { HttpModule } from '@angular/http';
-import { LOG4NG_SERVICE_HANDLER_PROVIDERS, LOG4NG_ERROR_HANDLER_PROVIDERS, LOG4NG_SERVICE_CONFIG, LOG4NG_ERROR_HANDLER_CONFIG, Level } from '@ngx-log4ng/core';
+import { NgModule, ErrorHandler } from '@angular/core';
 
 import { AppComponent } from './app.component';
-
+import { Log4ngModule, Log4ngService } from '@ngx-log4ng/core';
 
 @NgModule({
   declarations: [
     AppComponent
   ],
-  providers: [
-    LOG4NG_SERVICE_HANDLER_PROVIDERS,
-    {
-      provide: LOG4NG_SERVICE_CONFIG,
-      useValue: {
-        recipients: [
-          {
-            classname: 'ConsoleWriter',
-            params: {
-              name: 'Angular2 Test App::Console Logger'
-            }
-          }
-        ],
-        filters: []
-      }
-    },
-
-    LOG4NG_ERROR_HANDLER_PROVIDERS,
-    {
-      provide: LOG4NG_ERROR_HANDLER_CONFIG,
-      useValue: {
-        rethrowError: false,
-        unwrapError: false
-      }
-    }
-  ],
   imports: [
     BrowserModule,
-    HttpModule,
-    //Log4ngModule.forRoot()
+    Log4ngModule.forRoot(
+      {
+        unwrapError: true,
+        recipients: [
+          {
+            classname: 'ConsoleRecipient'
+          }
+        ]
+      }
+    )
   ],
-  bootstrap: [AppComponent]
+  providers: [
+    {
+      provide: ErrorHandler,
+      useClass: Log4ngService
+    }
+  ],
+  bootstrap: [ AppComponent ]
 })
 export class AppModule { }

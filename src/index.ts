@@ -22,7 +22,7 @@ export class Log4ngModule {
           useValue: config
         }
       ]
-    }
+    };
   }
 
 
@@ -35,6 +35,6 @@ export class Log4ngModule {
           useValue: config
         }
       ]
-    }
+    };
   }
 }
